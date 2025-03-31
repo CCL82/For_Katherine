@@ -1,0 +1,88 @@
+CFC_Katherine
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>情感按钮示例</title>
+  <style>
+    /* 简单的页面样式，仅供参考，可自行调整 */
+    body {
+      font-family: sans-serif;
+      margin: 50px;
+      text-align: center;
+    }
+    .btn {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .content {
+      margin-top: 30px;
+      display: none; /* 默认不显示 */
+      font-size: 18px;
+      line-height: 1.6;
+    }
+    /* 可以用类名来控制显示/隐藏 */
+    .show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>送给你的小网页</h1>
+  
+  <p>请选择你的心情：</p>
+  
+  <!-- 三个按钮 -->
+  <button class="btn" onclick="showContent('happy')">开心时打开</button>
+  <button class="btn" onclick="showContent('sad')">伤心时打开</button>
+  <button class="btn" onclick="showContent('miss')">想我时打开</button>
+
+  <!-- 用来显示不同内容的三个 <div> -->
+  <div id="happy" class="content">
+    <p>
+      这里放上你想写给对方的“开心时打开”的内容。<br />
+      例如：<br />
+      当你开心的时候，别忘了与你爱的人一起分享这份喜悦；<br />
+      或是写一些祝福的话，让对方记得你也在感受Ta的快乐~
+    </p>
+  </div>
+  
+  <div id="sad" class="content">
+    <p>
+      这里放上你想写给对方的“伤心时打开”的内容。<br />
+      例如：<br />
+      伤心的时候，不要忘了还有人在默默地支持你，爱你；<br />
+      给对方一些安慰和鼓励，让Ta知道自己并不孤单。
+    </p>
+  </div>
+  
+  <div id="miss" class="content">
+    <p>
+      这里放上你想写给对方的“想我时打开”的内容。<br />
+      例如：<br />
+      写一些日常的关心、对未来的期盼，<br />
+      或者表达自己的思念之情，让对方在想你时能感受到你的温暖。
+    </p>
+  </div>
+
+  <script>
+    function showContent(contentId) {
+      // 先把所有内容都隐藏
+      const allContents = document.querySelectorAll('.content');
+      allContents.forEach(content => {
+        content.classList.remove('show');
+      });
+
+      // 然后只显示被点击对应ID的那个内容
+      const targetContent = document.getElementById(contentId);
+      if (targetContent) {
+        targetContent.classList.add('show');
+      }
+    }
+  </script>
+</body>
+</html>
