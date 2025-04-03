@@ -28,11 +28,37 @@ CFC_Katherine
     .show {
       display: block;
     }
+    .all-messages {
+      margin-top: 10px;
+      font-size: 15px;
+      color: gray;
+      display: none;
+    }
+
+    /* 🎬 Typewriter 效果 */
+    .typewriter {
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      border-right: .15em solid #333;
+      animation: typing 2.5s steps(40, end), blink .75s step-end infinite;
+      width: 0;
+    }
+
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+
+    @keyframes blink {
+      from, to { border-color: transparent }
+      50% { border-color: #333 }
+    }
   </style>
 </head>
 <body>
 
-  <h1>送给你的小网页</h1>
+  <h1>送给Katherine的小网页</h1>
   
   <p>请选择你的心情：</p>
   
@@ -42,45 +68,77 @@ CFC_Katherine
   <button class="btn" onclick="showContent('miss')">想我时打开</button>
 
   <!-- 用来显示不同内容的三个 <div> -->
+
+  <!-- 开心 -->
   <div id="happy" class="content">
-    <p>
-      这里放上你想写给对方的“开心时打开”的内容。<br />
-      例如：<br />
-      当你开心的时候，别忘了与你爱的人一起分享这份喜悦；<br />
-      或是写一些祝福的话，让对方记得你也在感受Ta的快乐~
-    </p>
+    <p id="happy-text"></p>
+    <button onclick="toggleAll('happy')">查看所有朋友的留言</button>
+    <div id="happy-all" class="all-messages"></div>
   </div>
   
+  <!-- 伤心 -->
   <div id="sad" class="content">
-    <p>
-      这里放上你想写给对方的“伤心时打开”的内容。<br />
-      例如：<br />
-      伤心的时候，不要忘了还有人在默默地支持你，爱你；<br />
-      给对方一些安慰和鼓励，让Ta知道自己并不孤单。
-    </p>
+    <p id="sad-text"></p>
+    <button onclick="toggleAll('sad')">查看所有朋友的留言</button>
+    <div id="sad-all" class="all-messages"></div>
   </div>
-  
+
+  <!-- 想念 -->
   <div id="miss" class="content">
-    <p>
-      这里放上你想写给对方的“想我时打开”的内容。<br />
-      例如：<br />
-      写一些日常的关心、对未来的期盼，<br />
-      或者表达自己的思念之情，让对方在想你时能感受到你的温暖。
-    </p>
+    <p id="miss-text"></p>
+    <button onclick="toggleAll('miss')">查看所有朋友的留言</button>
+    <div id="miss-all" class="all-messages"></div>
   </div>
 
-  <script>
-    function showContent(contentId) {
-      // 先把所有内容都隐藏
-      const allContents = document.querySelectorAll('.content');
-      allContents.forEach(content => {
-        content.classList.remove('show');
-      });
+<script>
+    // 每個情緒類別的朋友留言陣列
+    const messages = {
+      happy: [
+        "開心的時候記得多笑一點，你的笑容超有感染力！ - 小艾",
+        "今天也有可愛的事情發生嗎？跟我分享呀～ - 志豪",
+        "你快樂的樣子是我最喜歡的模樣！ - 美如"
+      ],
+      sad: [
+        "別怕難過，有我在陪你慢慢走過來。 - 哲瑋",
+        "抱抱～這些情緒都會過去的，你會越來越堅強的。 - 佳欣",
+        "沒關係的，可以哭，等你準備好再笑回來就好。 - 阿全"
+      ],
+      miss: [
+        "嘿，我也在想你呢。你在心裡不是一會兒，是一直。 - 婷瑜",
+        "世界再大，我們總會在彼此心中有位置。 - 小樺",
+        "想你的時候就翻翻我們的合照，都是暖暖的回憶。 - 麗文"
+      ]
+    };
 
-      // 然后只显示被点击对应ID的那个内容
-      const targetContent = document.getElementById(contentId);
-      if (targetContent) {
-        targetContent.classList.add('show');
+    function showContent(type) {
+      // 隱藏所有內容
+      document.querySelectorAll('.content').forEach(el => {
+        el.classList.remove('show');
+        el.querySelector('p').classList.remove('typewriter'); // 清除舊動畫
+        el.querySelector('p').textContent = ''; // 清除舊文字
+      });
+      document.querySelectorAll('.all-messages').forEach(el => el.style.display = 'none');
+
+      // 顯示對應的內容容器
+      const container = document.getElementById(type);
+      const textEl = document.getElementById(`${type}-text`);
+      const randomMsg = messages[type][Math.floor(Math.random() * messages[type].length)];
+      textEl.textContent = randomMsg;
+
+      // 強制觸發動畫重播
+      void textEl.offsetWidth;
+      textEl.classList.add('typewriter');
+      container.classList.add('show');
+    }
+
+    function toggleAll(type) {
+      const container = document.getElementById(`${type}-all`);
+      if (container.style.display === 'block') {
+        container.style.display = 'none';
+      } else {
+        const all = messages[type].map(msg => `<div>• ${msg}</div>`).join('');
+        container.innerHTML = all;
+        container.style.display = 'block';
       }
     }
   </script>
