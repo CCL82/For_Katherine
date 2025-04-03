@@ -1,86 +1,161 @@
-CFC_Katherine
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>情感按钮示例</title>
+  <title>送给Katherine的小网页</title>
   <style>
-    /* 简单的页面样式，仅供参考，可自行调整 */
     body {
       font-family: sans-serif;
       margin: 50px;
       text-align: center;
     }
+
     .btn {
       margin: 10px;
       padding: 10px 20px;
       font-size: 16px;
       cursor: pointer;
     }
+
     .content {
       margin-top: 30px;
-      display: none; /* 默认不显示 */
+      display: none;
       font-size: 18px;
       line-height: 1.6;
+      text-align: center; /* 讓內容和按鈕都置中 */
     }
-    /* 可以用类名来控制显示/隐藏 */
+
     .show {
       display: block;
+    }
+
+    .all-messages {
+      margin-top: 10px;
+      font-size: 15px;
+      color: gray;
+      display: none;
+    }
+
+    /* 讓「查看所有朋友的留言」按鈕和文字之間有 20px、並置中 */
+    .all-btn {
+      display: block;         /* 讓按鈕在新的一行 */
+      margin: 20px auto 0;   /* 與文字保持 20px 距離後，再自動置中 */
+    }
+
+    /* 打字機外觀 + 游標閃爍 */
+    .typewriter {
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: .15em solid #333;
+      margin: 0 auto;
+    }
+    .caret-blink {
+      animation: blink 0.75s step-end infinite;
+    }
+    @keyframes blink {
+      50% { border-color: transparent; }
     }
   </style>
 </head>
 <body>
 
-  <h1>送给你的小网页</h1>
-  
+  <h1>送给Katherine的小网页</h1>
   <p>请选择你的心情：</p>
   
-  <!-- 三个按钮 -->
   <button class="btn" onclick="showContent('happy')">开心时打开</button>
   <button class="btn" onclick="showContent('sad')">伤心时打开</button>
   <button class="btn" onclick="showContent('miss')">想我时打开</button>
 
-  <!-- 用来显示不同内容的三个 <div> -->
+  <!-- 开心 -->
   <div id="happy" class="content">
-    <p>
-      这里放上你想写给对方的“开心时打开”的内容。<br />
-      例如：<br />
-      当你开心的时候，别忘了与你爱的人一起分享这份喜悦；<br />
-      或是写一些祝福的话，让对方记得你也在感受Ta的快乐~
-    </p>
+    <p id="happy-text"></p>
+    <button class="btn all-btn" onclick="toggleAll('happy')">查看所有朋友的留言</button>
+    <div id="happy-all" class="all-messages"></div>
   </div>
-  
+
+  <!-- 伤心 -->
   <div id="sad" class="content">
-    <p>
-      这里放上你想写给对方的“伤心时打开”的内容。<br />
-      例如：<br />
-      伤心的时候，不要忘了还有人在默默地支持你，爱你；<br />
-      给对方一些安慰和鼓励，让Ta知道自己并不孤单。
-    </p>
+    <p id="sad-text"></p>
+    <button class="btn all-btn" onclick="toggleAll('sad')">查看所有朋友的留言</button>
+    <div id="sad-all" class="all-messages"></div>
   </div>
-  
+
+  <!-- 想念 -->
   <div id="miss" class="content">
-    <p>
-      这里放上你想写给对方的“想我时打开”的内容。<br />
-      例如：<br />
-      写一些日常的关心、对未来的期盼，<br />
-      或者表达自己的思念之情，让对方在想你时能感受到你的温暖。
-    </p>
+    <p id="miss-text"></p>
+    <button class="btn all-btn" onclick="toggleAll('miss')">查看所有朋友的留言</button>
+    <div id="miss-all" class="all-messages"></div>
   </div>
 
   <script>
-    function showContent(contentId) {
-      // 先把所有内容都隐藏
-      const allContents = document.querySelectorAll('.content');
-      allContents.forEach(content => {
-        content.classList.remove('show');
-      });
+    // 三組不同情境的朋友訊息
+    const messages = {
+      happy: [
+        "開心的時候記得多笑一點，你的笑容超有感染力！ - 小艾",
+        "今天也有可愛的事情發生嗎？跟我分享呀～ - 志豪",
+        "你快樂的樣子是我最喜歡的模樣！ - 美如"
+      ],
+      sad: [
+        "別怕難過，有我在陪你慢慢走過來。 - 哲瑋",
+        "抱抱～這些情緒都會過去的，你會越來越堅強的。 - 佳欣",
+        "沒關係的，可以哭，等你準備好再笑回來就好。 - 阿全"
+      ],
+      miss: [
+        "嘿，我也在想你呢。你在心裡不是一會兒，是一直。 - 婷瑜",
+        "世界再大，我們總會在彼此心中有位置。 - 小樺",
+        "想你的時候就翻翻我們的合照，都是暖暖的回憶。 - 麗文"
+      ]
+    };
 
-      // 然后只显示被点击对应ID的那个内容
-      const targetContent = document.getElementById(contentId);
-      if (targetContent) {
-        targetContent.classList.add('show');
+    /* 顯示隨機一句 + JS打字機效果 */
+    function showContent(type) {
+      // 先清除舊的顯示 & 動畫
+      document.querySelectorAll('.content').forEach(div => {
+        div.classList.remove('show');
+        const p = div.querySelector('p');
+        p.textContent = "";
+        p.classList.remove('typewriter', 'caret-blink');
+      });
+      document.querySelectorAll('.all-messages').forEach(el => el.style.display = 'none');
+
+      // 抽一則訊息
+      const container = document.getElementById(type);
+      const textEl = document.getElementById(`${type}-text`);
+      const msg = messages[type][Math.floor(Math.random() * messages[type].length)];
+
+      container.classList.add('show');
+
+      // 用 JS 模擬打字機
+      typeWriter(msg, textEl, 50); // 速度50ms/字，可自行調
+    }
+
+    /* 打字機效果：用 setInterval 逐字出現 */
+    function typeWriter(text, element, speed = 50) {
+      let index = 0;
+      element.textContent = "";
+      element.classList.add('typewriter', 'caret-blink');
+
+      const timer = setInterval(() => {
+        element.textContent += text.charAt(index);
+        index++;
+        if (index >= text.length) {
+          clearInterval(timer);
+          // 打完後若要停止閃爍游標, 可在這裡加:
+          // element.classList.remove('caret-blink');
+        }
+      }, speed);
+    }
+
+    /* 顯示/隱藏全部留言 */
+    function toggleAll(type) {
+      const container = document.getElementById(`${type}-all`);
+      if (container.style.display === 'block') {
+        container.style.display = 'none';
+      } else {
+        const all = messages[type].map(msg => `<div>• ${msg}</div>`).join('');
+        container.innerHTML = all;
+        container.style.display = 'block';
       }
     }
   </script>
